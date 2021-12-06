@@ -39,7 +39,7 @@ public class CsvReader {
             // read first data line
             this.line = this.bufferReader.readLine();
 
-            // read all tracks in wordList
+            // read all words in wordList
             while( this.line != null ) {
                 // Skip the subject line
                 if(i == 0) {

@@ -7,11 +7,24 @@ public class Dictionary {
     private static Trie trieWords = new Trie();
     private static Stack<String> history = new Stack<>();
 
+    /**
+     * Search the word. Obtain an arrayList of word that shares the same prefixes
+     * @param word Word to be searched
+     * @return {@code ArrayList} of {@link Word} that shares the same prefixes
+     */
     private static ArrayList<Word> searchWord(String word){
+
+        // Find the longest prefix (Lowercase by default)
         String resultPrefix = trieWords.search(word.toLowerCase(Locale.ROOT));
+
         return searchWordInMap(resultPrefix);
     }
 
+    /**
+     * Helper method to search in the {@code HashMap} words that share the same prefixes
+     * @param prefix Prefix to be searched
+     * @return {@code ArrayList} if {@link Word} that shares the same prefixes
+     */
     private static ArrayList<Word> searchWordInMap(String prefix){
         ArrayList<Word> results = new ArrayList<>();
 
@@ -24,6 +37,12 @@ public class Dictionary {
         return results;
     }
 
+    /**
+     * Helper method to check if among all the similar word we have the exact match
+     * @param word Word to be searched for an exact match
+     * @param words {@code ArrayList} of {@link Word}
+     * @return the index of the exact match, or -1 if there is no exact match
+     */
     private static int checkContain(String word, ArrayList<Word> words){
         for (int i = 0;i<=words.size()-1;i++){
             if(word.equals(words.get(i).getEnglish()))
@@ -65,7 +84,6 @@ public class Dictionary {
                         Word exactMatch = words.get(index);
                         System.out.println(exactMatch);
                         history.push(exactMatch.getEnglish());
-
                     }
                     // Exact match doesn't exist. But similar words exist
                     else if (words.size() > 1) {
@@ -97,6 +115,8 @@ public class Dictionary {
 
                     ArrayList<Word> words = searchWord(word);
 
+                    // Only translate the word if it is an exact match~
+                    // User should use Dictionary function (Menu 1) ) if they are not sure the word they want to translate
                     int index;
                     if ((index = checkContain(word, words)) != -1) {
                         Word exactMatch = words.get(index);
