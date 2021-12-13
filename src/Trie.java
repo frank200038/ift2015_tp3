@@ -1,10 +1,10 @@
 import java.util.Collection;
 import java.util.HashMap;
 
-// Inspired by xxx
-
 /**
- * Trie class is a tree structure that is used to find the longest prefixes
+ * Trie class is a tree structure that is used to find the longest prefixes.
+ * Inspired by https://www.techiedelight.com/longest-common-prefix-given-set-strings-using-trie/,
+ * {@author} Yan Zhuang, Diego Gonzalez
  */
 public class Trie {
 
@@ -15,12 +15,10 @@ public class Trie {
     private class TrieNode{
         private char value;
         private HashMap<Character,TrieNode> children;
-        private boolean isEnd;
 
         public TrieNode(char ch){
             value = ch;
             children = new HashMap<>();
-            isEnd = false;
         }
 
         public HashMap<Character, TrieNode> getChildren() {
@@ -31,13 +29,6 @@ public class Trie {
             return value;
         }
 
-        public void setIsEnd(boolean val){
-            isEnd = val;
-        }
-
-        public boolean isEnd() {
-            return isEnd;
-        }
     }
 
 
@@ -72,8 +63,6 @@ public class Trie {
                 walk = newNode; // Descend the tree
             }
         }
-
-        walk.setIsEnd(true);
     }
 
     /**
@@ -98,6 +87,7 @@ public class Trie {
             return "";
         }
 
+        // Start at the root
         TrieNode walk = root;
         int index = 0;
         String prefix ="";
