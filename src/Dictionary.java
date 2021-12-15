@@ -38,6 +38,7 @@ public class Dictionary {
     private static List<Word> searchWordInMap(String prefix){
         List<Word> results = new ArrayList<>();
 
+        // Iterate through all the words in the hashmap to find words that start with the same prefix.
         for(String current : words.keySet()){
             if (current.startsWith(prefix)){
                 results.add(words.get(current));
@@ -92,8 +93,9 @@ public class Dictionary {
 
                     List<Word> words = searchWord(word);
 
-                    // If the search result actually contains the word, return the exact match
+
                     int index;
+                    // If the search result actually contains the word, return the exact match
                     if ((index = checkContain(word, words)) != -1) {
                         Word exactMatch = words.get(index);
                         System.out.println(exactMatch);
@@ -104,11 +106,14 @@ public class Dictionary {
                     else if (words.size() > 1) {
 
                         history.push(word);
+
                         // Display top-10 results. Or if results are less than 10, display all results.
                         System.out.println("Exact match didn't find. Do you mean (" + Math.min(words.size(), 10) + " result):");
                         for (int i = 0; i <= Math.min(words.size() - 1, 10); i++) {
                             System.out.println(words.get(i).getEnglish());
                         }
+
+                        // Display an extra message to show that there are more similar words
                         if (words.size() > 10) {
                             System.out.println(words.size() - 10 + " more words to show");
                         }
@@ -132,19 +137,20 @@ public class Dictionary {
 
                     List<Word> words = searchWord(word);
 
-                    // Only translate the word if it is an exact match~
-                    // User should use Dictionary function (Menu 1) ) if they are not sure the word they want to translate
+                    // We assume the word will only be translated if there is an exact match (As no specification was given)
+                    // User should use Dictionary function (Menu 1) if they are not sure how to spell the word
                     int index;
                     if ((index = checkContain(word, words)) != -1) {
-                        Word exactMatch = words.get(index);
-                        System.out.println(exactMatch.getFrench());
+                        Word wordToTranslate = words.get(index);
+                        System.out.println(wordToTranslate.getFrench());
                     } else {
-                        System.out.println("The word cannot be translated because it does not exist!");
+                        System.out.println("The word cannot be translated because it does not exist! \n" +
+                                "Consider using menu option 1");
                     }
                 }
                 // Special menu item built just for assessment purpose
                 case 4 ->{
-                    System.out.println("Please enter the word. Enter \"$\" for the last line indicate the end. ");
+                    System.out.println("Please enter the word (One line each). Enter \"$\" for the last line indicate the end. ");
                     String word;
 
                     // Generate output test file
@@ -153,11 +159,13 @@ public class Dictionary {
                         FileWriter fileWriter = new FileWriter(output);
                         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
+                        // As long as the user didn't input the special character. Write each result to the output file.
                         while(! (word = sc.nextLine()).equals("$")){
                             List<Word> words = searchWord(word);
                             bufferedWriter.append(String.valueOf(words.size())).append("\n");
                         }
 
+                        // Remember to close the stream of writers
                         bufferedWriter.close();
                         fileWriter.close();
 

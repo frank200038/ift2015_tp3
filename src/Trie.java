@@ -25,10 +25,6 @@ public class Trie {
             return children;
         }
 
-        public char getValue() {
-            return value;
-        }
-
     }
 
 
@@ -90,7 +86,7 @@ public class Trie {
         // Start at the root
         TrieNode walk = root;
         int index = 0;
-        String prefix ="";
+        String prefix =""; // Initial prefix is empty
 
         // If the current node has no children, or we exceed the length of the word.
         // No need to keep searching
@@ -104,8 +100,8 @@ public class Trie {
                 if(current == word.charAt(index)){
                     walk = child.get(current);
                     found = true;
-                    index++;
-                    prefix = word.substring(0,index);
+                    index++; // Update the index to make sure we are at the right character of the word
+                    prefix = word.substring(0,index); // Update the longest prefix (so far) as well
                     break;
                 }
             }
