@@ -9,7 +9,7 @@ public class Dictionary {
 
     private static Map<String,Word> words = new TreeMap<>(); // Stores all the words
     private static Trie trieWords = new Trie(); // For finding longest prefix
-    private static Stack<String> history = new Stack<>(); // Store user history
+    private static Stack<Word> history = new Stack<>(); // Store user history
 
     /**
      * Search the word. Obtain an arrayList of word that shares the same prefixes
@@ -49,17 +49,17 @@ public class Dictionary {
     }
 
     /**
-     * Helper method to check if among all the similar word we have the exact match
-     * @param word Word to be searched for an exact match
-     * @param words {@code ArrayList} of {@link Word}
-     * @return the index of the exact match, or -1 if there is no exact match
+     * Helper method to make sure we only store the 10 most recent search history
+     * @param word Word to be stored into the history
      */
-    private static int checkContain(String word, List<Word> words){
-        for (int i = 0;i<=words.size()-1;i++){
-            if(word.equals(words.get(i).getEnglish()))
-                return i;
+    private static void storeHistory(Word word){
+        if(history.size() < 10){
+            history.push(word);
+        } else
+        {
+            history.remove(0);
+            history.push(word);
         }
-        return -1;
     }
 
     //Delegate the real execution menu to Menu
@@ -77,8 +77,7 @@ public class Dictionary {
         System.out.println("1) Search Word");
         System.out.println("2) Print History");
         System.out.println("3) Translate the word");
-        System.out.println("4) For grading use (This option will generate the same output as test file). \n \t \t \t \t \t " +
-                "Choose this option for assessment purpose");
+        System.out.println("4) For grading use (Choose this option for assessment purpose)");
         System.out.println("5) Exit");
 
         int option = sc.nextInt();
@@ -91,42 +90,40 @@ public class Dictionary {
                     System.out.println("Enter the word:");
                     String word = sc.nextLine();
 
-                    List<Word> words = searchWord(word);
-
-
-                    int index;
-                    // If the search result actually contains the word, return the exact match
-                    if ((index = checkContain(word, words)) != -1) {
-                        Word exactMatch = words.get(index);
-                        System.out.println(exactMatch);
-                        history.push(exactMatch.getEnglish());
+                    Word wordExactMatch;
+                    // Found an exact match of word. No need to do prefix searching
+                    if ((wordExactMatch = words.get(word)) != null) {
+                        System.out.println(wordExactMatch);
+                        storeHistory(wordExactMatch);
                     }
-
                     // Exact match doesn't exist. But similar words exist
-                    else if (words.size() > 1) {
+                    else {
+                        List<Word> words = searchWord(word);
 
-                        history.push(word);
+                        if (words.size() > 1) {
 
-                        // Display top-10 results. Or if results are less than 10, display all results.
-                        System.out.println("Exact match didn't find. Do you mean (" + Math.min(words.size(), 10) + " result):");
-                        for (int i = 0; i <= Math.min(words.size() - 1, 10); i++) {
-                            System.out.println(words.get(i).getEnglish());
+                            // Display top-10 results. Or if results are less than 10, display all results.
+                            System.out.println("Exact match didn't find. Do you mean (" + Math.min(words.size(), 10) + " result):");
+                            for (int i = 0; i <= Math.min(words.size() - 1, 9); i++) {
+                                System.out.println(words.get(i).getEnglish());
+                            }
+
+                            // Display an extra message to show that there are more similar words
+                            if (words.size() > 10) {
+                                System.out.println(words.size() - 10 + " more words to show");
+                            }
+                        } else {
+                            System.out.println("No Result");
                         }
-
-                        // Display an extra message to show that there are more similar words
-                        if (words.size() > 10) {
-                            System.out.println(words.size() - 10 + " more words to show");
-                        }
-                    } else{
-                        System.out.println("No Result");
                     }
                 }
                 // Display history of words that users have searched.
                 case 2 -> {
                     if (history.size() != 0) {
                         System.out.println("Words History: ");
-                        for(String word : history){
+                        for(Word word : history){
                             System.out.println(word);
+                            System.out.println("---------------------------------------");
                         }
                     } else
                         System.out.println("No words history");
@@ -135,43 +132,39 @@ public class Dictionary {
                     System.out.println("Enter the word:");
                     String word = sc.nextLine();
 
-                    List<Word> words = searchWord(word);
+                    Word wordExactMatch;
 
                     // We assume the word will only be translated if there is an exact match (As no specification was given)
                     // User should use Dictionary function (Menu 1) if they are not sure how to spell the word
-                    int index;
-                    if ((index = checkContain(word, words)) != -1) {
-                        Word wordToTranslate = words.get(index);
-                        System.out.println(wordToTranslate.getFrench());
-                    } else {
+                    if ((wordExactMatch = words.get(word)) != null) {
+                        System.out.println(wordExactMatch.getEnglish());
+                        System.out.println("Its french translation is: " + wordExactMatch.getFrench());
+                        System.out.println("Want to know more information about this word? Use option 1 - Dictionary");
+                    }else {
                         System.out.println("The word cannot be translated because it does not exist! \n" +
                                 "Consider using menu option 1");
                     }
                 }
+
                 // Special menu item built just for assessment purpose
                 case 4 ->{
-                    System.out.println("Please enter the word (One line each). Enter \"$\" for the last line indicate the end. ");
+                    System.out.println("Please enter the word (One line each). " +
+                            "Enter \"$\" for the last line indicate the end. ");
                     String word;
 
-                    // Generate output test file
-                    File output = new File("output.txt");
-                    try {
-                        FileWriter fileWriter = new FileWriter(output);
-                        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                    List<List<Word>> wordsAll = new ArrayList<>();
 
-                        // As long as the user didn't input the special character. Write each result to the output file.
-                        while(! (word = sc.nextLine()).equals("$")){
-                            List<Word> words = searchWord(word);
-                            bufferedWriter.append(String.valueOf(words.size())).append("\n");
-                        }
-
-                        // Remember to close the stream of writers
-                        bufferedWriter.close();
-                        fileWriter.close();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    while(! (word = sc.nextLine()).equals("$")){
+                        List<Word> words = searchWord(word);
+                        wordsAll.add(words);
                     }
+
+                    // ** Store all the result lists in a separate lists. Do this for the sake of output format.
+                    // Output all the numbers all at once, just like the test file ** (Just trying to follow the format)
+                    for(List<Word> list : wordsAll){
+                        System.out.println(list.size());
+                    }
+
                 }
                 case 5 -> System.exit(0);
             }

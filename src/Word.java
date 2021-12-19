@@ -21,6 +21,7 @@ public class Word {
     }
     public String getFrench() {return french;}
 
+
     // Redefine equals so that two words are equals if they have the same English spelling.
     @Override
     public boolean equals(Object o) {
@@ -30,9 +31,9 @@ public class Word {
         return english.toLowerCase(Locale.ROOT).equals(word.english.toLowerCase(Locale.ROOT));
     }
 
+    // Redefine toString method to facilite the output of each word (No need to write multiple get)
     @Override
     public String toString() {
-
         return "" + "English: " + english + "\n" +
                 "French: " + french + "\n" +
                 "Type: " + type + "\n" +

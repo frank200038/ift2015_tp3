@@ -14,7 +14,7 @@ public class Trie {
      */
     private class TrieNode{
         private char value;
-        private HashMap<Character,TrieNode> children;
+        private HashMap<Character,TrieNode> children; // Use HashMap to represent the Trie tree structure.
 
         public TrieNode(char ch){
             value = ch;
